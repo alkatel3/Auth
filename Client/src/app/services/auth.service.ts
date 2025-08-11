@@ -83,4 +83,17 @@ export class AuthService {
   getDetail(): Observable<UserDetail>{
     return this.httpClient.get<UserDetail>(`${this.apiUrl}account/detail`)
   }
+
+  getAll(): Observable<UserDetail[]>{
+    return this.httpClient.get<UserDetail[]>(`${this.apiUrl}account`)
+  }
+
+  getRoles():string[] | null {
+    const token = this.getToken();
+    if(!token)
+      return null;
+
+    const decodedToken:any = jwtDecode(token);
+    return decodedToken.role || null
+  }
 }

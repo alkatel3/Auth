@@ -36,6 +36,12 @@
                             </span>
                         </button>
                     </mat-menu>
+                    <a *ngIf="userDetail?.roles.includes('Admin')" mat-button [routerLink]="['/users']"  style="color: white;">
+                        <mat-icon>
+                            groups
+                        </mat-icon>
+                        Users
+                    </a>
                 </div>
             </div>
         }@else {

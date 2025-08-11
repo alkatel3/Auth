@@ -143,16 +143,27 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetUsers()
         {
-            var users = await _userManager.Users.Select(u => new UserDetailDto
-            {
-                Id = u.Id,
-                Email = u.Email,
-                Name = u.Name,
-                Surname = u.Surname,
-                Roles = _userManager.GetRolesAsync(u).Result.ToArray()
-            }).ToListAsync();
+            var usersList = await _userManager.Users
+                .Select(u => new { u.Id, u.Email, u.Name, u.Surname })
+                .ToListAsync();
 
-            return Ok(users);
+            var result = new List<UserDetailDto>();
+
+            foreach (var u in usersList)
+            {
+                var roles = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(u.Id));
+
+                result.Add(new UserDetailDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Roles = roles.ToArray()
+                });
+            }
+
+            return Ok(result);
         }
 
         private string GenerateToken(AppUser user)
