@@ -33,24 +33,24 @@ namespace API.Controllers
 
             if (string.IsNullOrEmpty(createRoleDto.RoleName))
             {
-                return BadRequest("Role name in required");
+                return BadRequest(new { message = "Role name in required" });
             }
 
             var roleExist = await _roleManager.RoleExistsAsync(createRoleDto.RoleName);
 
             if (roleExist)
             {
-                return BadRequest("Role already exists");
+                return BadRequest(new { message = "Role already exists" });
             }
 
             var roleResult = await _roleManager.CreateAsync(new IdentityRole(createRoleDto.RoleName));
 
             if (roleResult.Succeeded)
             {
-                return Ok("Role Created Successfully");
+                return Ok(new { message = "Role Created Successfully" });
             }
 
-            return BadRequest("Role creation failed");
+            return BadRequest(new { message = "Role Created Successfully" });
         }
 
         [HttpGet]
@@ -81,17 +81,17 @@ namespace API.Controllers
 
             if(role is null)
             {
-                return NotFound("Role not found");
+                return NotFound(new { message = "Role not found" });
             }
 
             var result = await _roleManager.DeleteAsync(role);
 
             if (result.Succeeded)
             {
-                return Ok("Role deleted successfully");
+                return Ok(new { message = "Role deleted successfully" });
             }
 
-            return BadRequest("Role deletion failed");
+            return BadRequest(new { message = "Role deletion failed" });
         }
 
         [HttpPost("assign")]
@@ -101,26 +101,26 @@ namespace API.Controllers
 
             if(user is null)
             {
-                return NotFound("User not found");
+                return NotFound(new { message = "User not found" });
             }
 
             var role = await _roleManager.FindByIdAsync(roleAssignDto.RoleID);
 
             if(role is null)
             {
-                return NotFound("Role not found");
+                return NotFound(new { message = "Role not found" });
             }
 
             var result = await _userManager.AddToRoleAsync(user, role.Name!);
 
             if (result.Succeeded)
             {
-                return Ok("Role assigned successfully");
+                return Ok(new { message = "Role assigned successfully" });
             }
 
             var error = result.Errors.FirstOrDefault();
 
-            return BadRequest(error.Description);
+            return BadRequest(new { message = error.Description });
         }
 
     }
