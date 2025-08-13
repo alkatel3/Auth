@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { RegisterRequest } from '../interfaces/register-request';
 import { UserDetail } from '../interfaces/user-detail';
+import { ResetPasswordRequest } from '../interfaces/reset-password-request';
 
 @Injectable({
   providedIn: 'root'
@@ -86,6 +87,14 @@ export class AuthService {
 
   getAll(): Observable<UserDetail[]>{
     return this.httpClient.get<UserDetail[]>(`${this.apiUrl}account`)
+  }
+
+  forgotPassword(email: string): Observable<AuthResponse> {
+    return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/forgot-password`, { email: email })
+  }
+
+  resetPassword(data: ResetPasswordRequest): Observable<AuthResponse> {
+    return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/reset-password`, data)
   }
 
   getRoles():string[] | null {
