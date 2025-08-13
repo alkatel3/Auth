@@ -1,5 +1,6 @@
 export interface AuthResponse {
     token: string,
     isSuccess: true,
-    message: string
+    message: string,
+    refreshToken: string
 }

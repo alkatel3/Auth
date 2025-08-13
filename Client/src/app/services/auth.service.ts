@@ -15,7 +15,7 @@ import { ChangePasswordRequest } from '../interfaces/change-password-request';
 })
 export class AuthService {
   private apiUrl:string = environment.apiUrl
-  private tokenKey = 'token'
+  private userKey = 'user'
 
   constructor(private httpClient: HttpClient) { }
 
@@ -25,7 +25,7 @@ export class AuthService {
       .pipe(
         map((response: AuthResponse) => {
           if(response.isSuccess){
-            localStorage.setItem(this.tokenKey, response.token);
+            localStorage.setItem(this.userKey, JSON.stringify(response));
           }
 
           return response
@@ -54,7 +54,7 @@ export class AuthService {
     if(!token)
       return false
 
-    return !this.isTokenExpired()
+    return true//!this.isTokenExpired()
   }
 
   private isTokenExpired() {
@@ -68,14 +68,30 @@ export class AuthService {
     if(isTokenExpired)
        this.logout()
 
-    return isTokenExpired
+    return true//isTokenExpired
   }
 
   logout() {
-    localStorage.removeItem(this.tokenKey)
+    localStorage.removeItem(this.userKey)
   }
 
-  getToken = (): string | null => localStorage.getItem(this.tokenKey) || '';
+  getToken = (): string | null => {
+    const user = localStorage.getItem(this.userKey);
+    if(!user)
+      return null
+    
+    const userDetail: AuthResponse = JSON.parse(user)
+    return userDetail.token
+  }
+
+  getRefreshToken = (): string | null => {
+    const user = localStorage.getItem(this.userKey);
+    if(!user)
+      return null
+    
+    const userDetail: AuthResponse = JSON.parse(user)
+    return userDetail.refreshToken
+  }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.httpClient
@@ -100,6 +116,10 @@ export class AuthService {
 
   changePassword(data: ChangePasswordRequest): Observable<AuthResponse> {
     return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/change-password`, data)
+  }
+  
+  refreshToken(data: {email: string, token: string, refreshToken: string}): Observable<AuthResponse> {
+    return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/refresh-token`, data)
   }
 
   getRoles():string[] | null {
