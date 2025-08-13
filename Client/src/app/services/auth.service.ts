@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import { RegisterRequest } from '../interfaces/register-request';
 import { UserDetail } from '../interfaces/user-detail';
 import { ResetPasswordRequest } from '../interfaces/reset-password-request';
+import { ChangePasswordRequest } from '../interfaces/change-password-request';
 
 @Injectable({
   providedIn: 'root'
@@ -95,6 +96,10 @@ export class AuthService {
 
   resetPassword(data: ResetPasswordRequest): Observable<AuthResponse> {
     return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/reset-password`, data)
+  }
+
+  changePassword(data: ChangePasswordRequest): Observable<AuthResponse> {
+    return this.httpClient.post<AuthResponse>(`${this.apiUrl}account/change-password`, data)
   }
 
   getRoles():string[] | null {
